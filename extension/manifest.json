@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "PinTube Shield",
+  "short_name": "PinTube Shield",
+  "version": "0.1.0",
+  "description": "A personal YouTube request-filtering prototype.",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.doubleclick.net/*",
+    "*://*.googlesyndication.com/*",
+    "*://*.googleadservices.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "PinTube Shield"
+  }
+}
