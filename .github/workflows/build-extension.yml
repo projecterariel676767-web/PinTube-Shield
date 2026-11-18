@@ -1,0 +1,56 @@
+name: Build PinTube Shield
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "extension/**"
+      - ".github/workflows/build-extension.yml"
+      - "scripts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Validate and package Chrome extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate extension manifest
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest_path = Path("extension/manifest.json")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+          assert manifest["manifest_version"] == 3
+          assert manifest["name"] == "PinTube Shield"
+          assert (Path("extension/background.js")).is_file()
+          assert (Path("extension/popup/index.html")).is_file()
+          assert (Path("extension/popup/style.css")).is_file()
+          assert (Path("extension/popup/app.js")).is_file()
+
+          print("Manifest and required extension files are valid.")
+          PY
+
+      - name: Package extension
+        run: |
+          mkdir -p dist
+          cd extension
+          zip -r ../dist/PinTubeShield-chrome-extension.zip .
+
+      - name: Upload downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PinTubeShield-chrome-extension
+          path: dist/PinTubeShield-chrome-extension.zip
+          if-no-files-found: error
+          retention-days: 14
